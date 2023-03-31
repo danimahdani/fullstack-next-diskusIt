@@ -3,9 +3,12 @@ const nextConfig = {
   experimental: {
     appDir: true,
   },
+  externals: {
+    "supports-color": "supports-color",
+  },
   images: {
     domains: ["lh3.googleusercontent.com", "avatars.githubusercontent.com"],
   },
-}
+};
 
-module.exports = nextConfig
+module.exports = nextConfig;
