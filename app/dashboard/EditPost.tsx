@@ -3,6 +3,9 @@
 import Image from "next/image";
 import { useState } from "react";
 import Toggle from "./Toggle";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import axios from "axios";
+import { toast } from "react-hot-toast";
 
 type EditProps = {
   id: string;
@@ -25,7 +28,28 @@ export default function EditPost({
   comments,
   id,
 }: EditProps) {
+  const queryClient = useQueryClient();
   const [toggle, setToggle] = useState(false);
+  let deleteToastID: string = "delete toast";
+
+  const { mutate } = useMutation(
+    async (id: string) =>
+      await axios.delete("/api/posts/deletePost", { data: id }),
+    {
+      onError: (error) => {
+        toast.error("Error delete that post");
+      },
+      onSuccess: (data) => {
+        queryClient.invalidateQueries(["auth-posts"]);
+        toast.success("Post has been deleted.", { id: deleteToastID });
+      },
+    }
+  );
+
+  const deletePost = () => {
+    deleteToastID = toast.loading("Deleting your post.", { id: deleteToastID });
+    mutate(id);
+  };
 
   return (
     <>
@@ -41,10 +65,17 @@ export default function EditPost({
           <p className="text-sm font-bold text-gray-700">
             {comments?.length} Comments
           </p>
-          <button className="text-sm font-bold text-red-500">Delete</button>
+          <button
+            onClick={(e) => {
+              setToggle(true);
+            }}
+            className="text-sm font-bold text-red-500"
+          >
+            Delete
+          </button>
         </div>
       </div>
-      {toggle && <Toggle />}
+      {toggle && <Toggle deletePost={deletePost} setToggle={setToggle} />}
     </>
   );
 }

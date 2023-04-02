@@ -3,10 +3,11 @@ export type PostsType = {
   id: string;
   createdAt?: string;
   comments?: {
-    createdAt: string;
     id: string;
+    message: string;
     postId: string;
     userId: string;
+    createdAt: string;
   }[];
   user: {
     name: string;
