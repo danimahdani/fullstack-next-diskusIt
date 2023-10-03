@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import axios, { AxiosError } from "axios";
+import axios, { AxiosError, AxiosResponse } from "axios";
 import toast from "react-hot-toast";
 
 type Comment = {
@@ -25,13 +25,13 @@ export default function AddComment({ id }: PostProps) {
       return axios.post("/api/posts/addComment", { data });
     },
     {
-      onSuccess: (data) => {
+      onSuccess: (data: AxiosResponse<any, any>) => {
         queryClient.invalidateQueries(["detail-post"]);
         setTitle("");
         setIsDisabled(false);
         toast.success("Added your comment", { id: commentToastId });
       },
-      onError: (error) => {
+      onError: (error: unknown) => {
         // console.log(error);
         setIsDisabled(false);
         if (error instanceof AxiosError) {
